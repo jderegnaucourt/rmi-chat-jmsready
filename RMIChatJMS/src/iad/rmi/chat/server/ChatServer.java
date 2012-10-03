@@ -1,11 +1,9 @@
 package iad.rmi.chat.server;
 
-import iad.rmi.chat.client.ChatParticipantImpl;
 import iad.rmi.chat.server.jms.ChatJMSConference;
 import iad.rmi.chat.server.jms.ChatJMSConferenceImpl;
 
 import java.rmi.registry.*;
-import java.rmi.*;
 
 public class ChatServer {
 
@@ -21,6 +19,7 @@ public class ChatServer {
 			chatConference = new ChatJMSConferenceImpl("ChatConference", "default");
 			chatConference.start();
 			chatConference.activateLog("default");
+			System.out.println("Creating Registry");
 			Registry reg = LocateRegistry.createRegistry(1099);			
 			ConferenceFactory cp = new ConferenceFactoryImpl(reg);		
 			

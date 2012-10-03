@@ -27,7 +27,7 @@ public class ChatClientConsole extends Thread {
 	
 	public void run() {
 		String line; 
-		
+		printUsage();
 	    while(true) {
 	       try {
 				printNextMessage();	
@@ -56,10 +56,15 @@ public class ChatClientConsole extends Thread {
 	    	else System.out.println("*** you are not connected to any chat conference");
 	    }
 	    else if (line.equals("/leave")) {
-	    	participant.leave(conference);
-	    }	
+	    	if(participant.isConnected()) participant.leave(conference);
+	    	else System.out.println("*** you are not connected to any chat conference");
+	    }
+	    else if (line.equals("/help")) {
+	    	printUsage();
+	    }
 	    else if (line.equals("/desc")) {
-	    	System.out.println("*** "+conference.getDescription());
+	    	if(participant.isConnected()) System.out.println("*** "+conference.getDescription());
+	    	else System.out.println("*** you are not connected to any chat conference");
 	    }	
 		else if(content[0].matches("/create")) {
 			if(!factory.newConference(content[1], content[2])) System.out.println("*** could not create conference : "+content[1]+", wrong password");
@@ -67,15 +72,29 @@ public class ChatClientConsole extends Thread {
 		else if(content[0].matches("/join")) {
 	    	ChatConference cf;
 			try {
-				cf = (ChatConference) java.rmi.Naming.lookup("//172.27.161.160:1099/"+content[1]);
-				conference = cf;
-	    		participant.join(conference);
-		    	conferenceName = content[1];
+				if(java.rmi.Naming.lookup("//172.27.161.160:1099/"+content[1]) instanceof ChatConference) {
+					cf = (ChatConference) java.rmi.Naming.lookup("//172.27.161.160:1099/"+content[1]);
+					conference = cf;
+		    		participant.join(conference);
+			    	conferenceName = content[1];
+				}
+				else System.out.println("*** oops, this is not a chat conference");
 			} catch (NotBoundException e) {
 				System.out.println("*** conference "+content[1]+" doesnt exist");
 			}
 		}
 		else participant.send(line);
+	}
+	
+	private void printUsage() {
+		System.out.println("*** how to use this console :");
+    	System.out.println("/stop -> stops the app");
+    	System.out.println("/list -> shows remote objects list (only conferences can be joined)");
+    	System.out.println("/desc -> shows the description of the conference");
+    	System.out.println("/create [name] [password] -> creates a new chatconference (default password is 'mypsd')");
+    	System.out.println("/join [name] -> join the conference named in parameter");
+    	System.out.println("/help -> shows this help");
+    	System.out.println("*** have fun !");
 	}
 
 	private void listChatRooms() {
