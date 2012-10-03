@@ -14,10 +14,11 @@ public class ChatServer {
 	
 	public static void main(String[] args) throws Exception {
 		try {
-			System.out.println("Creating ChatConference");
+			System.out.println("Creating Default ChatConference");
 			ChatJMSConference chatConference;
 			chatConference = new ChatJMSConferenceImpl("ChatConference", "default");
 			chatConference.start();
+			System.out.println("Activates Log for Default ChatConference");
 			chatConference.activateLog("default");
 			System.out.println("Creating Registry");
 			Registry reg = LocateRegistry.createRegistry(1099);			
